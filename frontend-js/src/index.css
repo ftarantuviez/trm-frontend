@@ -1,0 +1,29 @@
+#root,
+.ant-layout {
+min-height: 100vh;
+}
+
+.ant-layout-header {
+  display: flex;
+}
+
+.ant-layout-header h1 {
+  color: #fff;
+  margin-right: 20px;
+}
+
+.ant-layout-content {
+  padding: 20px;
+}
+
+.ant-form-inline {
+  flex-wrap: nowrap;
+}
+
+.ant-form-inline .ant-form-item.input-address {
+  flex: 1;
+}
+
+.ant-table {
+  overflow: auto;
+}
