@@ -2,6 +2,7 @@ import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { ADDRESS_BALANCE, ADDRESS_TRANSACTIONS } from './actions';
 
 import * as Api from './api';
+import { Numbers } from '../utils/Numbers';
 
 function* loadAddressBalance({ payload, type }) {
   try {
@@ -12,10 +13,24 @@ function* loadAddressBalance({ payload, type }) {
     // request our balance from Etherscan
     const response = yield call(Api.getAddressBalance, payload);
 
+    // We handle the case where the response is empty
+    if (!response?.data) {
+      yield put({
+        type: `${type}_ERROR`,
+      });
+    }
+
+    // Since balance comes back in wei, and we will be displaying in ether
+    // we add a new field to the response to store the balance in ether
+    const extendedData = {
+      ...response.data,
+      balanceInEther: Numbers.weiToEther(response.data.result, 18),
+    };
+
     yield put({
       type: `${type}_SUCCESS`,
       payload,
-      response: response?.data,
+      response: extendedData,
     });
   } catch (e) {
     yield put({

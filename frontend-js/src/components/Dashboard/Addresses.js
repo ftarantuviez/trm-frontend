@@ -1,7 +1,8 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Col, Table } from 'antd';
+import { Numbers } from '../../utils/Numbers';
 
 const columns = [
   {
@@ -10,7 +11,7 @@ const columns = [
   },
   {
     title: 'ETH Balance',
-    dataIndex: 'balance',
+    dataIndex: 'balanceInEther',
   },
 ];
 
@@ -24,11 +25,21 @@ const DashboardAddresses = memo(({ setSelectedAddress }) => {
     [setSelectedAddress]
   );
 
+  // We show the balance in ether with commas and 4 decimal places
+  const addressesParsed = useMemo(
+    () =>
+      addresses.map(address => ({
+        ...address,
+        balanceInEther: Numbers.toLocaleDecimals(address.balanceInEther, 6),
+      })),
+    [addresses]
+  );
+
   return (
     <Col span={24}>
       <Table
         columns={columns}
-        dataSource={addresses || []}
+        dataSource={addressesParsed || []}
         rowKey="address"
         onRow={record => ({
           onClick: () => onAddressClick(record),

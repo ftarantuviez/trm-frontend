@@ -66,6 +66,7 @@ const updateState = (state, action) => {
             {
               address: action.payload.address,
               balance: action.response.result,
+              balanceInEther: action.response.balanceInEther,
             },
           ],
           state.addresses
