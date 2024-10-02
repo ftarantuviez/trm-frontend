@@ -25,7 +25,7 @@ const DashboardAddresses = memo(({ setSelectedAddress }) => {
     [setSelectedAddress]
   );
 
-  // We show the balance in ether with commas and 4 decimal places
+  // We show the balance in ether with commas and 6 decimal places
   const addressesParsed = useMemo(
     () =>
       addresses.map(address => ({
