@@ -11,8 +11,6 @@ function* handleApiCall(
   successTransform = data => data
 ) {
   try {
-    yield put({ type: `${type}_REQUEST` });
-
     const response = yield call(apiFunction, payload);
 
     if (!response?.data) {
@@ -44,7 +42,21 @@ function* loadAddressBalance({ payload, type }) {
 
 // We get the transactions of an address
 function* loadAddressTransactions({ payload, type }) {
-  yield call(handleApiCall, Api.getAddressTransactions, payload, type);
+  // We reset the transactions when we request new ones
+  // This is only valid when the address is different
+  if (payload.clearTransactions) {
+    yield put({ type: `${type}_REQUEST` });
+  }
+
+  yield call(
+    handleApiCall,
+    Api.getAddressTransactions,
+    {
+      address: payload.address,
+      page: payload.page,
+    },
+    type
+  );
 }
 
 export default function* sagas() {

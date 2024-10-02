@@ -81,8 +81,12 @@ const updateState = (state, action) => {
 
     case `${ADDRESS_TRANSACTIONS}_SUCCESS`:
       // replace our transactions with the entire payload
+      // it handles pagination, saving the previous transactions and adding the new ones
       return {
-        transactions: action.response?.result || [],
+        transactions: [
+          ...state.transactions,
+          ...(action.response?.result || []),
+        ],
       };
 
     default:

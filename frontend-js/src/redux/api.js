@@ -13,7 +13,7 @@ export const getAddressBalance = ({ address }) =>
     },
   });
 
-export const getAddressTransactions = ({ address }) =>
+export const getAddressTransactions = ({ address, page = 1 }) =>
   axios.get(etherscanApiUrl, {
     params: {
       module: 'account',
@@ -21,7 +21,7 @@ export const getAddressTransactions = ({ address }) =>
       address,
       startblock: 0,
       endblock: 99999999,
-      page: 1,
+      page,
       offset: 10,
       sort: 'asc',
       apikey: process.env.ETHERSCAN_API_KEY,

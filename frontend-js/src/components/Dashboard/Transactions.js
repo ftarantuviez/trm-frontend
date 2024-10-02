@@ -1,7 +1,7 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Col, message, Row, Spin, Table } from 'antd';
+import { Button, Col, message, Row, Spin, Table } from 'antd';
 import {
   ADDRESS_TRANSACTIONS,
   requestAddressTransactions,
@@ -32,6 +32,7 @@ const columns = [
 ];
 
 const DashboardTransactions = memo(({ selectedAddress }) => {
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
   const lastAddress = useRef();
 
@@ -43,11 +44,17 @@ const DashboardTransactions = memo(({ selectedAddress }) => {
   // request Transactions whenever an Address changes
   useEffect(() => {
     if (selectedAddress !== lastAddress.current && selectedAddress) {
-      dispatch(requestAddressTransactions({ address: selectedAddress }));
+      dispatch(
+        requestAddressTransactions({
+          address: selectedAddress,
+          page,
+          clearTransactions: true,
+        })
+      );
     }
 
     lastAddress.current = selectedAddress;
-  }, [dispatch, selectedAddress]);
+  }, [dispatch, selectedAddress, page]);
 
   // display a message if our request errors
   useEffect(() => {
@@ -57,6 +64,18 @@ const DashboardTransactions = memo(({ selectedAddress }) => {
       );
     }
   }, [requestStatus]);
+
+  // We want to load the next page of transactions when the user clicks the load more button
+  const handleLoadMore = useCallback(() => {
+    const nextPage = page + 1;
+    dispatch(
+      requestAddressTransactions({
+        address: selectedAddress,
+        page: nextPage,
+      })
+    );
+    setPage(nextPage);
+  }, [dispatch, page, selectedAddress]);
 
   return (
     <Row>
@@ -72,8 +91,14 @@ const DashboardTransactions = memo(({ selectedAddress }) => {
               <Table
                 columns={columns}
                 dataSource={transactions || []}
-                pagination={false}
+                pagination={{
+                  current: page,
+                  onChange: setPage,
+                }}
                 rowKey="hash"
+                footer={() => (
+                  <Button onClick={handleLoadMore}>Load More</Button>
+                )}
               />
             )}
           </Row>

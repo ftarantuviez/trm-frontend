@@ -6,7 +6,11 @@ export const requestAddressBalance = ({ address }) => ({
   payload: { address },
 });
 
-export const requestAddressTransactions = ({ address }) => ({
+export const requestAddressTransactions = ({
+  address,
+  page,
+  clearTransactions,
+}) => ({
   type: ADDRESS_TRANSACTIONS,
-  payload: { address },
+  payload: { address, page, clearTransactions },
 });
