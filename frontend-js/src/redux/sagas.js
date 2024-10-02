@@ -32,7 +32,7 @@ function* handleApiCall(
   }
 }
 
-// Specific saga handlers
+// We get the balance of an address in ether
 function* loadAddressBalance({ payload, type }) {
   yield call(handleApiCall, Api.getAddressBalance, payload, type, data => ({
     ...data,
@@ -42,6 +42,7 @@ function* loadAddressBalance({ payload, type }) {
   }));
 }
 
+// We get the transactions of an address
 function* loadAddressTransactions({ payload, type }) {
   yield call(handleApiCall, Api.getAddressTransactions, payload, type);
 }

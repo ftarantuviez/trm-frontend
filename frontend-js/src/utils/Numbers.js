@@ -13,11 +13,9 @@ export const Numbers = {
   weiToEther: (amount, decimals = 18) =>
     BigNumber(amount).dividedBy(BigNumber(10).pow(decimals)).toString(),
   /** Utility function to format a number with commas and a fixed number of decimal places. */
-  toLocaleDecimals: (value, min = 2, max = 4) => {
-    const numValue = +value;
-    return numValue.toLocaleString(undefined, {
+  toLocaleDecimals: (value, min = 2, max = 6) =>
+    (+value).toLocaleString(undefined, {
       minimumFractionDigits: min,
       maximumFractionDigits: max,
-    });
-  },
+    }),
 };
