@@ -9,6 +9,7 @@ import { AddressInfo } from "../types/AddressInfo";
 
 export function useFetchAddressBalance() {
   const { setAddresses, addresses } = useAddresses();
+
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -45,8 +46,6 @@ export function useFetchAddressBalance() {
             apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,
           },
         });
-
-        toast.success("Address added successfully");
 
         // We create a new address info object
         const newAddress = {

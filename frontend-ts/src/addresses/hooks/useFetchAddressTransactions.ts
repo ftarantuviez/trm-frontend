@@ -17,12 +17,6 @@ export function useFetchAddressTransactions() {
 
         const addressInfo = addresses.find((addr) => addr.address === address);
 
-        // This should never happen, it's only here to satisfy typescript
-        if (!addressInfo) {
-          toast.error("Address not found");
-          return;
-        }
-
         const { data } = await axios.get<
           Readonly<{
             status: string;
@@ -36,7 +30,7 @@ export function useFetchAddressTransactions() {
             address,
             startblock: 0,
             endblock: 99999999,
-            page: addressInfo.transactions.page,
+            page: addressInfo?.transactions.page ?? 1,
             offset: 10,
             sort: "asc",
             apikey: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY,

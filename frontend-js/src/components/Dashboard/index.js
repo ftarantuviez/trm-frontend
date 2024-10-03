@@ -15,6 +15,7 @@ const Dashboard = memo(() => {
   const [selectedAddress, setSelectedAddress] = useState();
   const addresses = useSelector(state => state.addresses);
   const dispatch = useDispatch();
+
   // We handle if an address is provided by URL
   useEffect(() => {
     if (address) {

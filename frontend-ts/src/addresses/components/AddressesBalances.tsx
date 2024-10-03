@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/components/Table";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { useAddresses } from "./AddressesProvider";
 import { useFetchAddressBalance } from "../hooks/useFetchAddressBalance";
 import { AddressInfo } from "../types/AddressInfo";
@@ -20,6 +20,7 @@ import { Address } from "@/common/types/Address";
 import { Numbers } from "@/common/utils/Numbers";
 import { CopyButton } from "@/ui/components/CopyButton";
 import { useFetchAddressTransactions } from "../hooks/useFetchAddressTransactions";
+import { toast } from "sonner";
 
 export const AddressesBalances: React.FunctionComponent<{
   selectedAddress: Address | undefined;
@@ -30,13 +31,30 @@ export const AddressesBalances: React.FunctionComponent<{
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { fetchAddressBalance, isLoading } = useFetchAddressBalance();
   const [isValidAddress, setIsValidAddress] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // We define the number of items in the table
+  const itemsPerPage = 10;
+
+  // We handle the pagination of the addresses
+  const paginatedAddresses = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return addresses.slice(startIndex, endIndex);
+  }, [addresses, currentPage]);
+
+  // We fetch the transactions of the selected address
   const handleSelectAddress = useCallback(
     (address: AddressInfo) => {
       setSelectedAddress(address.address);
-      fetchAddressTransactions(address.address);
+      if (
+        address.transactions.data.length === 0 &&
+        address.address !== selectedAddress
+      ) {
+        fetchAddressTransactions(address.address);
+      }
     },
-    [setSelectedAddress, fetchAddressTransactions]
+    [setSelectedAddress, fetchAddressTransactions, selectedAddress]
   );
 
   // We fetch the balance of the new address prompted
@@ -49,9 +67,11 @@ export const AddressesBalances: React.FunctionComponent<{
       return;
     }
 
-    fetchAddressBalance(address);
-    setSearchTerm("");
     setIsValidAddress(true);
+    fetchAddressBalance(address).then(() => {
+      toast.success("Address added successfully");
+      setSearchTerm("");
+    });
   }, [searchTerm, fetchAddressBalance]);
 
   return (
@@ -89,9 +109,9 @@ export const AddressesBalances: React.FunctionComponent<{
           </form>
           <Table
             pagination={{
-              currentPage: 1,
-              totalPages: 1,
-              onPageChange: () => {},
+              currentPage: currentPage,
+              totalPages: Math.ceil(addresses.length / itemsPerPage),
+              onPageChange: setCurrentPage,
             }}
           >
             <TableHeader>
@@ -101,7 +121,7 @@ export const AddressesBalances: React.FunctionComponent<{
               </TableRow>
             </TableHeader>
             <TableBody>
-              {addresses.map((addr) => (
+              {paginatedAddresses.map((addr) => (
                 <TableRow
                   key={addr.address}
                   onClick={() => handleSelectAddress(addr)}
