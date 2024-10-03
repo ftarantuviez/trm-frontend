@@ -26,5 +26,8 @@ export type AddressInfo = Readonly<{
   /**
    * Transactions for the address.
    */
-  transactions: ReadonlyArray<Transaction>;
+  transactions: {
+    page: number;
+    data: ReadonlyArray<Transaction>;
+  };
 }>;

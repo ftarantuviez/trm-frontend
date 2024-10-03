@@ -5,7 +5,7 @@ import { AddressInfo } from "@/addresses/types/AddressInfo";
 
 export type AddressesContextType = Readonly<{
   addresses: ReadonlyArray<AddressInfo>;
-  setAddresses: (addresses: ReadonlyArray<AddressInfo>) => void;
+  setAddresses: React.Dispatch<React.SetStateAction<readonly AddressInfo[]>>;
 }>;
 
 const AddressesContext = React.createContext<AddressesContextType>({

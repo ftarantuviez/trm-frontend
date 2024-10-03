@@ -14,25 +14,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/ui/components/Card";
 import { Button } from "@/ui/components/Button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AddressInfo } from "../types/AddressInfo";
+
 import { useAddresses } from "./AddressesProvider";
+import { Address } from "@/common/types/Address";
+import { AlertCircle } from "lucide-react";
+import React from "react";
 
 export const AddressesCharts: React.FunctionComponent<{
-  selectedAddress: AddressInfo | undefined;
+  selectedAddress: Address | undefined;
 }> = ({ selectedAddress }) => {
   const { addresses } = useAddresses();
 
   const [currentChart, setCurrentChart] = useState(0);
 
+  const address = useMemo(() => {
+    return addresses.find((addr) => addr.address === selectedAddress);
+  }, [addresses, selectedAddress]);
+
   // Let's map transactions to allow for charting
   const transactions = useMemo(() => {
     return (
-      selectedAddress?.transactions.map((tx) => ({
+      address?.transactions.data.map((tx) => ({
         timeStamp: tx.timeStamp,
         value: tx.value,
       })) ?? []
     );
-  }, [selectedAddress]);
+  }, [address]);
 
   const addressesBalances = useMemo(() => {
     return addresses.map((addr) => ({
@@ -49,44 +56,56 @@ export const AddressesCharts: React.FunctionComponent<{
       {
         title: "Transaction Values",
         render: () => (
-          <BarChart data={transactions}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="timeStamp"
-              tickFormatter={(timestamp) =>
-                new Date(parseInt(timestamp) * 1000).toLocaleDateString()
-              }
-            />
-            <YAxis
-              tickFormatter={(value) => `${(value / 1e18).toFixed(2)} ETH`}
-              label={{
-                value: "Value (ETH)",
-                angle: -90,
-                position: "insideLeft",
-              }}
-            />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
+          <>
+            {transactions.length > 0 ? (
+              <BarChart data={transactions}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="timeStamp"
+                  tickFormatter={(timestamp) =>
+                    new Date(parseInt(timestamp) * 1000).toLocaleDateString()
+                  }
+                />
+                <YAxis
+                  tickFormatter={(value) => `${(value / 1e18).toFixed(2)} ETH`}
+                  label={{
+                    value: "Value (ETH)",
+                    angle: -90,
+                    position: "insideLeft",
+                  }}
+                />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#8884d8" />
+              </BarChart>
+            ) : (
+              <EmptyChartMessage message="No transactions found for this address." />
+            )}
+          </>
         ),
       },
       {
         title: "Address Balances",
         render: () => (
-          <BarChart data={addressesBalances}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="address"
-              tickFormatter={(address) =>
-                address.toString().slice(0, 6) + "..."
-              }
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="balance" fill="#82ca9d" />
-          </BarChart>
+          <>
+            {addressesBalances.length > 0 ? (
+              <BarChart data={addressesBalances}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="address"
+                  tickFormatter={(address) =>
+                    address.toString().slice(0, 6) + "..."
+                  }
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="balance" fill="#82ca9d" />
+              </BarChart>
+            ) : (
+              <EmptyChartMessage message="No address balances available." />
+            )}
+          </>
         ),
       },
     ],
@@ -128,3 +147,10 @@ export const AddressesCharts: React.FunctionComponent<{
     </Card>
   );
 };
+
+const EmptyChartMessage: React.FC<{ message: string }> = ({ message }) => (
+  <div className="flex flex-col items-center justify-center h-full">
+    <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+    <p className="text-lg font-semibold text-gray-600">{message}</p>
+  </div>
+);

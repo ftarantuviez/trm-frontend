@@ -28,6 +28,10 @@ export const Address = {
    * is not a valid address format.
    */
   ofStringOrThrow,
+  /**
+   * Truncates the given address to the first 6 and last 6 characters.
+   */
+  truncate,
 } as const;
 
 function ofString(s: string): Address | undefined {
@@ -46,4 +50,8 @@ function ofStringOrThrow(s: string): Address {
     throw new Error(`Invalid address: ${s}`);
   }
   return a;
+}
+
+function truncate(a: Address | `0x${string}`): string {
+  return `${a.slice(0, 6)}...${a.slice(-6)}`;
 }

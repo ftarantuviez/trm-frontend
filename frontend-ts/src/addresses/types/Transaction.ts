@@ -1,3 +1,5 @@
+import { Address } from "@/common/types/Address";
+
 /**
  * Represents a blockchain transaction.
  */
@@ -20,7 +22,7 @@ export type Transaction = Readonly<{
   /**
    * The transaction hash.
    */
-  hash: string;
+  hash: Address;
 
   /**
    * The number of transactions sent from this address before this one.
@@ -35,12 +37,12 @@ export type Transaction = Readonly<{
   /**
    * The address that initiated the transaction.
    */
-  from: string;
+  from: Address;
 
   /**
    * The address receiving the transaction.
    */
-  to: string;
+  to: Address;
 
   /**
    * The amount of Ether (or token value) transferred in wei.

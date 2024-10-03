@@ -19,16 +19,27 @@ import { cn } from "@/ui/lib/utils";
 import { Address } from "@/common/types/Address";
 import { Numbers } from "@/common/utils/Numbers";
 import { CopyButton } from "@/ui/components/CopyButton";
+import { useFetchAddressTransactions } from "../hooks/useFetchAddressTransactions";
 
 export const AddressesBalances: React.FunctionComponent<{
-  selectedAddress: AddressInfo | undefined;
-  setSelectedAddress: (address: AddressInfo | undefined) => void;
+  selectedAddress: Address | undefined;
+  setSelectedAddress: (address: Address | undefined) => void;
 }> = ({ selectedAddress, setSelectedAddress }) => {
   const { addresses } = useAddresses();
+  const { fetchAddressTransactions } = useFetchAddressTransactions();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { fetchAddressBalance, isLoading } = useFetchAddressBalance();
   const [isValidAddress, setIsValidAddress] = useState<boolean>(true);
 
+  const handleSelectAddress = useCallback(
+    (address: AddressInfo) => {
+      setSelectedAddress(address.address);
+      fetchAddressTransactions(address.address);
+    },
+    [setSelectedAddress, fetchAddressTransactions]
+  );
+
+  // We fetch the balance of the new address prompted
   const handleAddAddress = useCallback(() => {
     const address = Address.ofString(searchTerm);
 
@@ -76,7 +87,13 @@ export const AddressesBalances: React.FunctionComponent<{
               Add Address
             </Button>
           </form>
-          <Table>
+          <Table
+            pagination={{
+              currentPage: 1,
+              totalPages: 1,
+              onPageChange: () => {},
+            }}
+          >
             <TableHeader>
               <TableRow>
                 <TableHead>Address</TableHead>
@@ -87,9 +104,9 @@ export const AddressesBalances: React.FunctionComponent<{
               {addresses.map((addr) => (
                 <TableRow
                   key={addr.address}
-                  onClick={() => setSelectedAddress(addr)}
+                  onClick={() => handleSelectAddress(addr)}
                   className={cn(
-                    selectedAddress?.address === addr.address
+                    selectedAddress === addr.address
                       ? "bg-gray-100 dark:bg-gray-800"
                       : ""
                   )}

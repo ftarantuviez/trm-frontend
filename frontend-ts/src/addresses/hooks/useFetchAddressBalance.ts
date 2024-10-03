@@ -5,6 +5,7 @@ import { axios } from "@/common/api/axios";
 import { toast } from "sonner";
 import { Address } from "@/common/types/Address";
 import { formatEther } from "viem";
+import { AddressInfo } from "../types/AddressInfo";
 
 export function useFetchAddressBalance() {
   const { setAddresses, addresses } = useAddresses();
@@ -47,15 +48,18 @@ export function useFetchAddressBalance() {
 
         toast.success("Address added successfully");
 
-        setAddresses([
-          ...addresses,
-          {
-            address,
-            balance: BigInt(addressInfo.result),
-            balanceInEther: formatEther(BigInt(addressInfo.result)),
-            transactions: [],
+        // We create a new address info object
+        const newAddress = {
+          address,
+          balance: BigInt(addressInfo.result),
+          balanceInEther: formatEther(BigInt(addressInfo.result)),
+          transactions: {
+            page: 1,
+            data: [],
           },
-        ]);
+        } as const satisfies AddressInfo;
+
+        setAddresses([...addresses, newAddress]);
       } catch {
         toast.error("Error fetching address info");
       } finally {

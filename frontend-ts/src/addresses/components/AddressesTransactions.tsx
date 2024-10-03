@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/components/Card";
 import {
   Table,
@@ -10,11 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/components/Table";
-import { AddressInfo } from "../types/AddressInfo";
+
+import { Address } from "@/common/types/Address";
+import { useAddresses } from "./AddressesProvider";
+import { CopyButton } from "@/ui/components/CopyButton";
+import { formatEther } from "viem";
 
 export const AddressesTransactions: React.FunctionComponent<{
-  selectedAddress: AddressInfo | undefined;
+  selectedAddress: Address | undefined;
 }> = ({ selectedAddress }) => {
+  const { addresses } = useAddresses();
+
+  const transactions = useMemo(() => {
+    const address = addresses.find((addr) => addr.address === selectedAddress);
+    return address?.transactions.data || [];
+  }, [addresses, selectedAddress]);
+
   return (
     <div>
       <Card className="mb-4">
@@ -22,9 +33,16 @@ export const AddressesTransactions: React.FunctionComponent<{
           <CardTitle>Recent Transactions</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table
+            pagination={{
+              currentPage: 1,
+              totalPages: 1,
+              onPageChange: () => {},
+            }}
+          >
             <TableHeader>
               <TableRow>
+                <TableHead>Hash</TableHead>
                 <TableHead>From</TableHead>
                 <TableHead>To</TableHead>
                 <TableHead>Value</TableHead>
@@ -32,11 +50,43 @@ export const AddressesTransactions: React.FunctionComponent<{
               </TableRow>
             </TableHeader>
             <TableBody>
-              {selectedAddress?.transactions.map((tx, index) => (
+              {transactions.map((tx, index) => (
                 <TableRow key={index}>
-                  <TableCell>{tx.from}</TableCell>
-                  <TableCell>{tx.to}</TableCell>
-                  <TableCell>{tx.value} ETH</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`https://etherscan.io/tx/${tx.hash}`}
+                        target="_blank"
+                        className="hover:underline"
+                      >
+                        {Address.truncate(tx.hash)}
+                      </a>
+                      <CopyButton content={tx.hash} />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <a
+                      href={`https://etherscan.io/address/${tx.from}`}
+                      target="_blank"
+                      className="hover:underline"
+                    >
+                      {Address.truncate(tx.from)}
+                    </a>
+                  </TableCell>
+                  <TableCell>
+                    {tx.to ? (
+                      <a
+                        href={`https://etherscan.io/address/${tx.to}`}
+                        target="_blank"
+                        className="hover:underline"
+                      >
+                        {Address.truncate(tx.to)}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>{formatEther(BigInt(tx.value))} ETH</TableCell>
                   <TableCell>
                     {new Date(parseInt(tx.timeStamp) * 1000).toLocaleString()}
                   </TableCell>

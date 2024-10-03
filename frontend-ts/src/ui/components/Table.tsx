@@ -2,18 +2,49 @@ import * as React from "react";
 
 import { cn } from "../lib/utils";
 
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
-      {...props}
-    />
-  </div>
-));
+// Add these new interfaces
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  pagination?: PaginationProps;
+}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, pagination, ...props }, ref) => (
+    <div className="relative w-full overflow-auto">
+      <table
+        ref={ref}
+        className={cn("w-full caption-bottom text-sm", className)}
+        {...props}
+      />
+      {pagination && (
+        <div className="mt-4 flex justify-between items-center">
+          <button
+            onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
+            disabled={pagination.currentPage === 1}
+            className="px-4 py-2 bg-muted text-muted-foreground rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
+            disabled={pagination.currentPage === pagination.totalPages}
+            className="px-4 py-2 bg-muted text-muted-foreground rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  )
+);
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<

@@ -3,13 +3,14 @@
 import React, { useState } from "react";
 import { AddressesBalances } from "../components/AddressesBalances";
 import { AddressesTransactions } from "../components/AddressesTransactions";
-import { AddressInfo } from "../types/AddressInfo";
+
 import { AddressesCharts } from "../components/AddressesCharts";
+import { Address } from "@/common/types/Address";
 
 export const Dashboard: React.FC = () => {
-  const [selectedAddress, setSelectedAddress] = useState<
-    AddressInfo | undefined
-  >(undefined);
+  const [selectedAddress, setSelectedAddress] = useState<Address | undefined>(
+    undefined
+  );
 
   return (
     <div className="container mx-auto p-4">
