@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Col, message, Row, Spin, Table } from 'antd';
+
 import {
   ADDRESS_TRANSACTIONS,
   requestAddressTransactions,

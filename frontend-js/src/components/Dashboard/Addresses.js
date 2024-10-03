@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Col, Table } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Numbers } from '../../utils/Numbers';
 
 const columns = [
@@ -17,12 +18,14 @@ const columns = [
 
 const DashboardAddresses = memo(({ setSelectedAddress }) => {
   const addresses = useSelector(state => state.addresses);
+  const navigate = useNavigate();
 
   const onAddressClick = useCallback(
     ({ address }) => {
       setSelectedAddress(address);
+      navigate(`/address/${address}`);
     },
-    [setSelectedAddress]
+    [setSelectedAddress, navigate]
   );
 
   // We show the balance in ether with commas and 6 decimal places
