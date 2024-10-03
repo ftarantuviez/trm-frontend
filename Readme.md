@@ -25,11 +25,3 @@ The `frontend-ts` directory contains a refactored and improved version of the ch
 ## Getting Started
 
 To explore each version of the project, navigate to the respective directory and follow the instructions in their individual README files.
-
-## Contributing
-
-Feel free to submit issues or pull requests if you have any suggestions or improvements for either version of the project.
-
-## License
-
-[Include your chosen license information here]
