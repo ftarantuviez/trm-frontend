@@ -29,7 +29,7 @@ export const AddressesTransactions: React.FunctionComponent<{
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // We fetch the transactions of the selected address
+  // We fetch the transactions of the selected address.
   const transactions = useMemo(() => {
     const address = addresses.find((addr) => addr.address === selectedAddress);
     return address?.transactions.data || [];
