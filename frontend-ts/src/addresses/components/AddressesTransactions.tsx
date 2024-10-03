@@ -19,6 +19,7 @@ import { formatEther } from "viem";
 import { Button } from "@/ui/components/Button";
 import { PlusIcon } from "lucide-react";
 import { useFetchAddressTransactions } from "../hooks/useFetchAddressTransactions";
+import { Separator } from "@/ui/components/Separator";
 
 export const AddressesTransactions: React.FunctionComponent<{
   selectedAddress: Address | undefined;
@@ -26,7 +27,7 @@ export const AddressesTransactions: React.FunctionComponent<{
   const { addresses } = useAddresses();
   const { fetchAddressTransactions, isLoading } = useFetchAddressTransactions();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   // We fetch the transactions of the selected address
   const transactions = useMemo(() => {
@@ -51,29 +52,30 @@ export const AddressesTransactions: React.FunctionComponent<{
   }, [fetchAddressTransactions, selectedAddress, totalPages]);
 
   return (
-    <div>
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>
-            <div className="flex items-center justify-between">
-              <div>
-                Recent Transactions
-                {selectedAddress && (
-                  <span className="text-sm text-gray-500">
-                    {" "}
-                    for {Address.truncate(selectedAddress)}
-                  </span>
-                )}
-              </div>
-              {transactions.length > 0 && (
-                <Button variant="outline" size="sm" onClick={handleLoadMore}>
-                  <PlusIcon className="mr-2" /> Load More
-                </Button>
+    <Card className="mb-4 h-full">
+      <CardHeader>
+        <CardTitle>
+          <div className="flex items-center justify-between">
+            <div>
+              Recent Transactions
+              {selectedAddress && (
+                <span className="text-sm text-gray-500">
+                  {" "}
+                  for {Address.truncate(selectedAddress)}
+                </span>
               )}
             </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+            {transactions.length > 0 && (
+              <Button variant="outline" size="sm" onClick={handleLoadMore}>
+                <PlusIcon className="mr-2" /> Load More
+              </Button>
+            )}
+          </div>
+          <Separator className="my-4" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {transactions.length > 0 && (
           <Table
             pagination={{
               currentPage,
@@ -147,8 +149,13 @@ export const AddressesTransactions: React.FunctionComponent<{
                   ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
+        )}
+        {transactions.length === 0 && (
+          <div className="flex items-end justify-center pt-12">
+            <p className="text-gray-500">No transactions found</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };

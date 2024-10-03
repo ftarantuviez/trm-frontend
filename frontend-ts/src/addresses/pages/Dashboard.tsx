@@ -58,13 +58,17 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AddressesBalances
-          selectedAddress={selectedAddress}
-          setSelectedAddress={setSelectedAddress}
-        />
-        <AddressesTransactions selectedAddress={selectedAddress} />
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="lg:col-span-2 xl:col-span-1">
+          <AddressesBalances
+            selectedAddress={selectedAddress}
+            setSelectedAddress={setSelectedAddress}
+          />
+        </div>
+        <div className="lg:col-span-2 xl:col-span-1">
+          <AddressesTransactions selectedAddress={selectedAddress} />
+        </div>
+        <div className="col-span-1 lg:col-span-2">
           <AddressesCharts selectedAddress={selectedAddress} />
         </div>
       </div>

@@ -21,6 +21,7 @@ import { Numbers } from "@/common/utils/Numbers";
 import { CopyButton } from "@/ui/components/CopyButton";
 import { useFetchAddressTransactions } from "../hooks/useFetchAddressTransactions";
 import { toast } from "sonner";
+import { Separator } from "@/ui/components/Separator";
 
 export const AddressesBalances: React.FunctionComponent<{
   selectedAddress: Address | undefined;
@@ -75,38 +76,39 @@ export const AddressesBalances: React.FunctionComponent<{
   }, [searchTerm, fetchAddressBalance]);
 
   return (
-    <div>
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Search Addresses</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="flex items-center gap-2 mb-4 w-full"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAddAddress();
+    <Card className="mb-4 h-full">
+      <CardHeader>
+        <CardTitle>Search Addresses</CardTitle>
+        <Separator />
+      </CardHeader>
+      <CardContent>
+        <form
+          className="flex items-center gap-2 mb-4 w-full"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAddAddress();
+          }}
+        >
+          <Input
+            placeholder="Search address..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setIsValidAddress(true);
             }}
+            className="mr-2 w-full"
+            error={isValidAddress ? "" : "Address is not valid"}
+            required
+          />
+          <Button
+            type="submit"
+            loading={isLoading}
+            disabled={!isValidAddress || isLoading}
           >
-            <Input
-              placeholder="Search address..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setIsValidAddress(true);
-              }}
-              className="mr-2 w-full"
-              error={isValidAddress ? "" : "Address is not valid"}
-              required
-            />
-            <Button
-              type="submit"
-              loading={isLoading}
-              disabled={!isValidAddress || isLoading}
-            >
-              Add Address
-            </Button>
-          </form>
+            Add Address
+          </Button>
+        </form>
+        {addresses.length > 0 ? (
           <Table
             pagination={{
               currentPage: currentPage,
@@ -144,8 +146,12 @@ export const AddressesBalances: React.FunctionComponent<{
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            No addresses found. Add an address to get started.
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
