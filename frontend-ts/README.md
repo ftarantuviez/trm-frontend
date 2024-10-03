@@ -52,7 +52,13 @@ frontend-ts/
    cd trm-frontend
    ```
 
-2. Install dependencies:
+2. Copy the example environment file:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. Install dependencies:
 
    ```bash
    npm install
@@ -60,7 +66,7 @@ frontend-ts/
    yarn install
    ```
 
-3. Run the development server:
+4. Run the development server:
 
    ```bash
    npm run dev
@@ -68,7 +74,7 @@ frontend-ts/
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
 ## 🧰 Available Scripts
 
